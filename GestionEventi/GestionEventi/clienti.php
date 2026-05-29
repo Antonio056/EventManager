@@ -1,0 +1,8 @@
+<?php require_once __DIR__ . '/includes/db.php'; require_once __DIR__ . '/includes/header.php';
+if ($_SERVER['REQUEST_METHOD']==='POST') { try { $pdo->beginTransaction(); $sid=create_soggetto($pdo); $stmt=$pdo->prepare('INSERT INTO cliente (id_soggetto,nome,cognome,email,telefono) VALUES (?,?,?,?,?)'); $stmt->execute([$sid,$_POST['nome'],$_POST['cognome'],$_POST['email'],$_POST['telefono'] ?: null]); $pdo->commit(); flash('Cliente registrato correttamente.'); } catch(Exception $e){ $pdo->rollBack(); flash('Errore: '.$e->getMessage(),'error'); } redirect('clienti.php'); }
+$clienti=fetch_all($pdo,'SELECT * FROM cliente ORDER BY cognome, nome');
+?>
+<div class="section-title"><h1>Clienti</h1><p class="muted">Sotto-entità di SOGGETTO che acquista biglietti ed effettua pagamenti.</p></div>
+<section class="grid-2"><div class="card"><h2>Nuovo cliente</h2><form class="form" method="post"><div><label>Nome</label><input name="nome" required></div><div><label>Cognome</label><input name="cognome" required></div><div><label>Email</label><input type="email" name="email" required></div><div><label>Telefono</label><input name="telefono"></div><div class="full"><button class="btn">Salva cliente</button></div></form></div>
+<div class="table-wrap"><table><thead><tr><th>Cliente</th><th>Email</th><th>Telefono</th><th>ID soggetto</th></tr></thead><tbody><?php foreach($clienti as $c): ?><tr><td><?=e($c['nome'].' '.$c['cognome'])?></td><td><?=e($c['email'])?></td><td><?=e($c['telefono'])?></td><td><?=e($c['id_soggetto'])?></td></tr><?php endforeach; if(!$clienti): ?><tr><td colspan="4" class="empty">Nessun cliente.</td></tr><?php endif; ?></tbody></table></div></section>
+<?php require_once __DIR__ . '/includes/footer.php'; ?>

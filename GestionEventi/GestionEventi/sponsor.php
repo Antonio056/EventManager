@@ -1,0 +1,8 @@
+<?php require_once __DIR__ . '/includes/db.php'; require_once __DIR__ . '/includes/header.php';
+if ($_SERVER['REQUEST_METHOD']==='POST') { try { $pdo->beginTransaction(); $sid=create_soggetto($pdo); $stmt=$pdo->prepare('INSERT INTO sponsor (id_soggetto,settore_commerciale,nome,email) VALUES (?,?,?,?)'); $stmt->execute([$sid,$_POST['settore_commerciale'] ?: null,$_POST['nome'],$_POST['email'] ?: null]); $pdo->commit(); flash('Sponsor registrato correttamente.'); } catch(Exception $e){ $pdo->rollBack(); flash('Errore: '.$e->getMessage(),'error'); } redirect('sponsor.php'); }
+$sponsor=fetch_all($pdo,'SELECT * FROM sponsor ORDER BY nome');
+?>
+<div class="section-title"><h1>Sponsor</h1><p class="muted">Soggetti che sponsorizzano uno o più eventi.</p></div>
+<section class="grid-2"><div class="card"><h2>Nuovo sponsor</h2><form class="form" method="post"><div><label>Nome</label><input name="nome" required></div><div><label>Settore commerciale</label><input name="settore_commerciale"></div><div class="full"><label>Email</label><input type="email" name="email"></div><div class="full"><button class="btn">Salva sponsor</button></div></form></div>
+<div class="table-wrap"><table><thead><tr><th>Nome</th><th>Settore</th><th>Email</th><th>ID soggetto</th></tr></thead><tbody><?php foreach($sponsor as $s): ?><tr><td><?=e($s['nome'])?></td><td><?=e($s['settore_commerciale'])?></td><td><?=e($s['email'])?></td><td><?=e($s['id_soggetto'])?></td></tr><?php endforeach; if(!$sponsor): ?><tr><td colspan="4" class="empty">Nessuno sponsor.</td></tr><?php endif; ?></tbody></table></div></section>
+<?php require_once __DIR__ . '/includes/footer.php'; ?>

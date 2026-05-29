@@ -1,0 +1,8 @@
+<?php require_once __DIR__ . '/includes/db.php'; require_once __DIR__ . '/includes/header.php';
+if ($_SERVER['REQUEST_METHOD']==='POST') { try { $pdo->beginTransaction(); $sid=create_soggetto($pdo); $stmt=$pdo->prepare('INSERT INTO artista (id_soggetto,nome_arte,genere_musicale,nazionalita) VALUES (?,?,?,?)'); $stmt->execute([$sid,$_POST['nome_arte'],$_POST['genere_musicale'] ?: null,$_POST['nazionalita'] ?: null]); $pdo->commit(); flash('Artista registrato correttamente.'); } catch(Exception $e){ $pdo->rollBack(); flash('Errore: '.$e->getMessage(),'error'); } redirect('artisti.php'); }
+$artisti=fetch_all($pdo,'SELECT * FROM artista ORDER BY nome_arte');
+?>
+<div class="section-title"><h1>Artisti</h1><p class="muted">Artisti coinvolti negli eventi, collegabili tramite tabella ponte evento_artista.</p></div>
+<section class="grid-2"><div class="card"><h2>Nuovo artista</h2><form class="form" method="post"><div><label>Nome d'arte</label><input name="nome_arte" required></div><div><label>Genere musicale</label><input name="genere_musicale"></div><div><label>Nazionalità</label><input name="nazionalita"></div><div class="full"><button class="btn">Salva artista</button></div></form></div>
+<div class="table-wrap"><table><thead><tr><th>Nome d'arte</th><th>Genere</th><th>Nazionalità</th><th>ID soggetto</th></tr></thead><tbody><?php foreach($artisti as $a): ?><tr><td><?=e($a['nome_arte'])?></td><td><?=e($a['genere_musicale'])?></td><td><?=e($a['nazionalita'])?></td><td><?=e($a['id_soggetto'])?></td></tr><?php endforeach; if(!$artisti): ?><tr><td colspan="4" class="empty">Nessun artista.</td></tr><?php endif; ?></tbody></table></div></section>
+<?php require_once __DIR__ . '/includes/footer.php'; ?>
