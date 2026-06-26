@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% set title = "GestionEventi | Login" %}
+{% block content %}
+<section class="auth-page">
+  <form class="auth-card" method="post">
+    <p class="eyebrow">Accesso cliente</p>
+    <h1>Login</h1>
+    <label>Email<input type="email" name="email" required value="demo@gestioneventi.it"></label>
+    <label>Password<input type="password" name="password" required value="demo123"></label>
+    <button class="btn primary" type="submit">Entra</button>
+    <p class="helper">Non hai un account? <a href="{{ url_for('register') }}">Registrati</a></p>
+  </form>
+</section>
+{% endblock %}

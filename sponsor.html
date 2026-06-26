@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% set title = "GestionEventi | Sponsor" %}
+{% block content %}
+<section class="page-title">
+  <p class="eyebrow">Sponsor</p>
+  <h1>Sponsor degli eventi</h1>
+  <p>Gli sponsor supportano economicamente gli eventi tramite la relazione SPONSORIZZA.</p>
+</section>
+
+<section class="event-grid page-grid">
+  {% for sponsor in sponsors %}
+  <article class="event-card">
+    <span class="badge">{{ sponsor.settore_commerciale }}</span>
+    <h3>{{ sponsor.nome }}</h3>
+    <p><strong>Email:</strong> {{ sponsor.email }}</p>
+    <p><strong>Eventi sponsorizzati:</strong> {{ sponsor.numero_eventi }}</p>
+  </article>
+  {% endfor %}
+</section>
+{% endblock %}

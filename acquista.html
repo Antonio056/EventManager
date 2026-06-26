@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% set title = "GestionEventi | Acquisto biglietto" %}
+{% block content %}
+<section class="form-page">
+  <form class="auth-card wide" method="post">
+    <p class="eyebrow">Acquisto biglietto</p>
+    <h1>{{ evento.titolo }}</h1>
+    <p class="helper">Evento: {{ evento.data }} · {{ evento.ora }} · {{ evento.luogo }}, {{ evento.citta }}</p>
+
+    <label>Tipo biglietto
+      <select name="tipo" required>
+        {% for tipo, prezzo in prezzi.items() %}
+        <option value="{{ tipo }}">{{ tipo }} - € {{ "%.2f"|format(prezzo) }}</option>
+        {% endfor %}
+      </select>
+    </label>
+
+    <label>Posto
+      <input name="posto" required placeholder="Esempio: A12">
+    </label>
+
+    <label>Metodo di pagamento
+      <select name="metodo" required>
+        <option>Carta</option>
+        <option>PayPal</option>
+        <option>Bonifico</option>
+      </select>
+    </label>
+
+    <button class="btn primary" type="submit">Conferma acquisto</button>
+  </form>
+</section>
+{% endblock %}

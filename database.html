@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% set title = "GestionEventi | Database" %}
+{% block content %}
+<section class="page-title">
+  <p class="eyebrow">Schema logico</p>
+  <h1>Database GestionEventi</h1>
+  <p>Il modello segue lo schema E-R finale. PAGAMENTO non è una tabella separata: gli attributi di pagamento sono dentro BIGLIETTO.</p>
+</section>
+
+<section class="table-section">
+  <table>
+    <thead>
+      <tr>
+        <th>Tabella</th>
+        <th>Attributi principali</th>
+        <th>Chiavi esterne</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>SOGGETTO</td><td>ID_Soggetto</td><td>—</td></tr>
+      <tr><td>CLIENTE</td><td>ID_Cliente, nome, cognome, telefono, email, password_hash, ID_Soggetto</td><td>ID_Soggetto → SOGGETTO</td></tr>
+      <tr><td>ARTISTA</td><td>ID_Artista, nome_arte, genere_musicale, nazionalità, email, ID_Soggetto</td><td>ID_Soggetto → SOGGETTO</td></tr>
+      <tr><td>SPONSOR</td><td>ID_Sponsor, nome, email, settore_commerciale, ID_Soggetto</td><td>ID_Soggetto → SOGGETTO</td></tr>
+      <tr><td>LUOGO</td><td>ID_Luogo, nome, indirizzo, città, capienza</td><td>—</td></tr>
+      <tr><td>EVENTO</td><td>ID_Evento, titolo, data, ora, descrizione, genere, ID_Luogo</td><td>ID_Luogo → LUOGO</td></tr>
+      <tr><td>BIGLIETTO</td><td>ID_Biglietto, prezzo, tipo, importo, metodo, esito, posto, stato, data_pagamento, ID_Cliente, ID_Evento</td><td>ID_Cliente → CLIENTE, ID_Evento → EVENTO</td></tr>
+      <tr><td>CONTRATTO</td><td>ID_Contratto, data_firma, compenso, stato_contratto, ruolo_artista, ID_Artista, ID_Evento</td><td>ID_Artista → ARTISTA, ID_Evento → EVENTO</td></tr>
+      <tr><td>SPONSORIZZA</td><td>ID_Sponsor, ID_Evento</td><td>ID_Sponsor → SPONSOR, ID_Evento → EVENTO</td></tr>
+      <tr><td>PREFERITO</td><td>ID_Cliente, ID_Evento, data_aggiunta</td><td>ID_Cliente → CLIENTE, ID_Evento → EVENTO</td></tr>
+    </tbody>
+  </table>
+</section>
+{% endblock %}

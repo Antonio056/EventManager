@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% set title = "GestionEventi | Home" %}
+{% block content %}
+<section class="hero">
+  <div class="hero-text">
+    <p class="eyebrow">Piattaforma dinamica per eventi</p>
+    <h1>Scopri eventi, salva i preferiti e acquista biglietti online.</h1>
+    <p>
+      GestionEventi permette ai clienti di registrarsi, effettuare login, consultare eventi,
+      salvarli nei preferiti e acquistare biglietti. Artisti e sponsor sono gestiti secondo
+      lo schema E-R finale del database.
+    </p>
+    <div class="actions">
+      <a class="btn primary" href="{{ url_for('eventi') }}">Visualizza eventi</a>
+      {% if not user %}
+      <a class="btn secondary" href="{{ url_for('register') }}">Crea account</a>
+      {% else %}
+      <a class="btn secondary" href="{{ url_for('profilo') }}">Vai al profilo</a>
+      {% endif %}
+    </div>
+  </div>
+  <div class="hero-panel">
+    <div class="panel-ticket">
+      <span>Evento in evidenza</span>
+      <h2>{{ eventi[0].titolo if eventi else "GestionEventi Live" }}</h2>
+      <p>{{ eventi[0].data if eventi else "2026" }} · {{ eventi[0].luogo if eventi else "Arena" }}</p>
+    </div>
+    <div class="stats">
+      <div><strong>{{ eventi_count }}</strong><small>Eventi</small></div>
+      <div><strong>{{ artisti_count }}</strong><small>Artisti</small></div>
+      <div><strong>{{ biglietti_count }}</strong><small>Biglietti venduti</small></div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-title">
+    <p class="eyebrow">Funzioni dinamiche</p>
+    <h2>Cosa può fare l’utente</h2>
+  </div>
+  <div class="feature-grid">
+    <article class="card">
+      <span class="icon">🔐</span>
+      <h3>Login e logout</h3>
+      <p>Ogni cliente può registrarsi, accedere al sito e uscire dal proprio account.</p>
+    </article>
+    <article class="card">
+      <span class="icon">⭐</span>
+      <h3>Preferiti</h3>
+      <p>Gli eventi interessanti possono essere salvati nel profilo personale.</p>
+    </article>
+    <article class="card">
+      <span class="icon">🎫</span>
+      <h3>Acquisto biglietti</h3>
+      <p>Il cliente può scegliere evento, tipo biglietto, posto e metodo di pagamento.</p>
+    </article>
+    <article class="card">
+      <span class="icon">🔁</span>
+      <h3>Modifica password</h3>
+      <p>Dall’area profilo è possibile aggiornare la password in sicurezza.</p>
+    </article>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-title">
+    <p class="eyebrow">Prossimi eventi</p>
+    <h2>Eventi in programma</h2>
+  </div>
+  <div class="event-grid">
+    {% for evento in eventi %}
+    <article class="event-card">
+      <span class="badge">{{ evento.genere }}</span>
+      <h3>{{ evento.titolo }}</h3>
+      <p>{{ evento.descrizione }}</p>
+      <div class="meta">
+        <span>📅 {{ evento.data }}</span>
+        <span>📍 {{ evento.luogo }}, {{ evento.citta }}</span>
+      </div>
+      <a class="btn small primary" href="{{ url_for('dettaglio_evento', id_evento=evento.id_evento) }}">Dettagli</a>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

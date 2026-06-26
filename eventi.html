@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% set title = "GestionEventi | Eventi" %}
+{% block content %}
+<section class="page-title">
+  <p class="eyebrow">Catalogo eventi</p>
+  <h1>Eventi disponibili</h1>
+  <p>Filtra gli eventi per genere, città o titolo e scegli cosa acquistare o salvare nei preferiti.</p>
+</section>
+
+<section class="toolbar">
+  <form method="get" class="search-form">
+    <input name="q" value="{{ q }}" placeholder="Cerca per titolo, città o descrizione...">
+    <select name="genere">
+      <option value="">Tutti i generi</option>
+      {% for g in generi %}
+      <option value="{{ g.genere }}" {% if genere == g.genere %}selected{% endif %}>{{ g.genere }}</option>
+      {% endfor %}
+    </select>
+    <button class="btn primary" type="submit">Filtra</button>
+  </form>
+</section>
+
+<section class="event-grid page-grid">
+  {% for evento in eventi %}
+  <article class="event-card">
+    <div>
+      <div class="card-top">
+        <span class="badge">{{ evento.genere }}</span>
+        {% if evento.id_evento in fav_ids %}<span class="fav-label">⭐ Preferito</span>{% endif %}
+      </div>
+      <h3>{{ evento.titolo }}</h3>
+      <p>{{ evento.descrizione }}</p>
+      <div class="meta">
+        <span>📅 {{ evento.data }}</span>
+        <span>🕘 {{ evento.ora }}</span>
+        <span>📍 {{ evento.luogo }}, {{ evento.citta }}</span>
+        <span>👥 Capienza {{ evento.capienza }}</span>
+      </div>
+    </div>
+    <div class="card-actions">
+      <a class="btn small secondary" href="{{ url_for('dettaglio_evento', id_evento=evento.id_evento) }}">Dettagli</a>
+      {% if user %}
+      <form method="post" action="{{ url_for('toggle_preferito', id_evento=evento.id_evento) }}">
+        <button class="btn small ghost" type="submit">{% if evento.id_evento in fav_ids %}Rimuovi preferito{% else %}Aggiungi preferito{% endif %}</button>
+      </form>
+      <a class="btn small primary" href="{{ url_for('acquista', id_evento=evento.id_evento) }}">Acquista</a>
+      {% else %}
+      <a class="btn small primary" href="{{ url_for('login') }}">Login per acquistare</a>
+      {% endif %}
+    </div>
+  </article>
+  {% else %}
+  <div class="empty">Nessun evento trovato.</div>
+  {% endfor %}
+</section>
+{% endblock %}

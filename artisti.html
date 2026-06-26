@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% set title = "GestionEventi | Artisti" %}
+{% block content %}
+<section class="page-title">
+  <p class="eyebrow">Artisti</p>
+  <h1>Artisti registrati</h1>
+  <p>Ogni artista è una specializzazione di soggetto e partecipa agli eventi tramite contratti.</p>
+</section>
+
+<section class="event-grid page-grid">
+  {% for artista in artisti %}
+  <article class="event-card">
+    <span class="badge">{{ artista.genere_musicale }}</span>
+    <h3>{{ artista.nome_arte }}</h3>
+    <p><strong>Nazionalità:</strong> {{ artista.nazionalita }}</p>
+    <p><strong>Email:</strong> {{ artista.email }}</p>
+    <p><strong>Contratti:</strong> {{ artista.numero_contratti }}</p>
+  </article>
+  {% endfor %}
+</section>
+{% endblock %}

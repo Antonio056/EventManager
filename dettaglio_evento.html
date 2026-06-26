@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% set title = "GestionEventi | Dettaglio evento" %}
+{% block content %}
+<section class="detail-layout">
+  <article class="detail-main">
+    <span class="badge">{{ evento.genere }}</span>
+    <h1>{{ evento.titolo }}</h1>
+    <p>{{ evento.descrizione }}</p>
+    <div class="meta big">
+      <span>📅 {{ evento.data }}</span>
+      <span>🕘 {{ evento.ora }}</span>
+      <span>📍 {{ evento.luogo }}, {{ evento.citta }}</span>
+      <span>👥 Capienza {{ evento.capienza }}</span>
+    </div>
+    <div class="actions">
+      {% if user %}
+      <form method="post" action="{{ url_for('toggle_preferito', id_evento=evento.id_evento) }}">
+        <button class="btn secondary" type="submit">{% if is_fav %}Rimuovi dai preferiti{% else %}Aggiungi ai preferiti{% endif %}</button>
+      </form>
+      <a class="btn primary" href="{{ url_for('acquista', id_evento=evento.id_evento) }}">Acquista biglietto</a>
+      {% else %}
+      <a class="btn primary" href="{{ url_for('login') }}">Accedi per acquistare</a>
+      {% endif %}
+    </div>
+  </article>
+
+  <aside class="detail-side">
+    <h2>Luogo</h2>
+    <p><strong>{{ evento.luogo }}</strong></p>
+    <p>{{ evento.indirizzo }}, {{ evento.citta }}</p>
+    <h2>Artisti</h2>
+    {% for artista in artisti %}
+    <p><strong>{{ artista.nome_arte }}</strong><br>{{ artista.ruolo_artista }} · {{ artista.stato_contratto }}</p>
+    {% else %}
+    <p>Nessun artista associato.</p>
+    {% endfor %}
+    <h2>Sponsor</h2>
+    {% for sponsor in sponsors %}
+    <p><strong>{{ sponsor.nome }}</strong><br>{{ sponsor.settore_commerciale }}</p>
+    {% else %}
+    <p>Nessuno sponsor associato.</p>
+    {% endfor %}
+  </aside>
+</section>
+{% endblock %}

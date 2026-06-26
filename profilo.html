@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% set title = "GestionEventi | Profilo" %}
+{% block content %}
+<section class="page-title">
+  <p class="eyebrow">Area personale</p>
+  <h1>Ciao, {{ cliente.nome }}</h1>
+  <p>Da qui puoi controllare biglietti acquistati, eventi preferiti e modificare la password.</p>
+  <a class="btn primary" href="{{ url_for('modifica_password') }}">Modifica password</a>
+</section>
+
+<section class="profile-grid">
+  <div class="profile-card">
+    <h2>Dati cliente</h2>
+    <p><strong>Nome:</strong> {{ cliente.nome }} {{ cliente.cognome }}</p>
+    <p><strong>Email:</strong> {{ cliente.email }}</p>
+    <p><strong>Telefono:</strong> {{ cliente.telefono or "Non inserito" }}</p>
+  </div>
+  <div class="profile-card">
+    <h2>Statistiche</h2>
+    <p><strong>Biglietti acquistati:</strong> {{ biglietti|length }}</p>
+    <p><strong>Eventi preferiti:</strong> {{ preferiti|length }}</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-title">
+    <p class="eyebrow">Biglietti</p>
+    <h2>I tuoi acquisti</h2>
+  </div>
+  <div class="list">
+    {% for b in biglietti %}
+    <article class="list-item">
+      <div>
+        <h3>{{ b.titolo }}</h3>
+        <p>{{ b.data }} · {{ b.ora }} · {{ b.luogo }}, {{ b.citta }}</p>
+        <p>Posto {{ b.posto }} · {{ b.tipo }} · {{ b.metodo }} · {{ b.esito }}</p>
+      </div>
+      <strong>€ {{ "%.2f"|format(b.importo) }}</strong>
+    </article>
+    {% else %}
+    <div class="empty">Non hai ancora acquistato biglietti.</div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-title">
+    <p class="eyebrow">Preferiti</p>
+    <h2>Eventi salvati</h2>
+  </div>
+  <div class="event-grid">
+    {% for evento in preferiti %}
+    <article class="event-card">
+      <span class="badge">{{ evento.genere }}</span>
+      <h3>{{ evento.titolo }}</h3>
+      <p>{{ evento.descrizione }}</p>
+      <div class="card-actions">
+        <a class="btn small secondary" href="{{ url_for('dettaglio_evento', id_evento=evento.id_evento) }}">Dettagli</a>
+        <form method="post" action="{{ url_for('toggle_preferito', id_evento=evento.id_evento) }}">
+          <button class="btn small ghost" type="submit">Rimuovi</button>
+        </form>
+      </div>
+    </article>
+    {% else %}
+    <div class="empty">Non hai ancora eventi preferiti.</div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}
