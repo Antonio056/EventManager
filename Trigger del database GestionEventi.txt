@@ -1,0 +1,173 @@
+Trigger del database GestionEventi
+
+
+Questo file contiene il codice dei trigger implementati nel database GestionEventi, utilizzati per garantire integrità dei dati, controlli applicativi e automazione delle operazioni.
+
+1. Trigger_Controllo_Email_Utente
+
+Campo	Valore
+Tabella	utente
+Evento	INSERT
+Timing	BEFORE
+Funzione	Controlla formato email
+IF NEW.email NOT LIKE '%_@__%.__%' THEN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = 'Errore: formato email non valido.';
+END IF;
+
+
+
+2. Trigger_Controllo_Telefono_Utente
+
+Campo	Valore
+Tabella	utente
+Evento	INSERT
+Timing	BEFORE
+Funzione	Controlla telefono
+IF NEW.telefono IS NOT NULL AND NEW.telefono NOT REGEXP '^[+0-9 ]+$' THEN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = 'Errore: numero di telefono non valido.';
+END IF;
+
+
+
+3. Trigger_Controllo_Data_Evento
+
+Campo	Valore
+Tabella	evento
+Evento	INSERT
+Timing	BEFORE
+Funzione	Controlla data evento
+IF NEW.data < CURDATE() THEN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = 'Errore: la data dell’evento non può essere nel passato.';
+END IF;
+
+
+
+4. Trigger_Controllo_Capienza_Evento
+
+Campo	Valore
+Tabella	evento
+Evento	INSERT
+Timing	BEFORE
+Funzione	Controlla capienza
+IF NEW.capienza <= 0 THEN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = 'Errore: capienza non valida.';
+END IF;
+
+
+
+5. Trigger_Controllo_Biglietti_Capienza
+
+Campo	Valore
+Tabella	biglietto
+Evento	INSERT
+Timing	BEFORE
+Funzione	Evita overbooking
+IF (SELECT COUNT(*) FROM biglietto WHERE id_evento = NEW.id_evento)
+>= (SELECT capienza FROM evento WHERE id_evento = NEW.id_evento)
+THEN
+SIGNAL SQLSTATE '45000'
+SET MESSAGE_TEXT = 'Errore: capienza evento superata.';
+END IF;
+
+
+
+6. Trigger_Controllo_Evento_Esistente_Biglietto
+
+IF NOT EXISTS (
+    SELECT 1 FROM evento WHERE id_evento = NEW.id_evento
+) THEN
+SIGNAL SQLSTATE '45000'
+SET MESSAGE_TEXT = 'Errore: evento non valido.';
+END IF;
+
+
+
+7. Trigger_Controllo_Cliente_Biglietto
+
+IF NOT EXISTS (
+    SELECT 1 FROM cliente WHERE id_cliente = NEW.id_cliente
+) THEN
+SIGNAL SQLSTATE '45000'
+SET MESSAGE_TEXT = 'Errore: cliente non valido.';
+END IF;
+
+
+
+8. Trigger_Controllo_Voto_Recensione
+
+IF NEW.voto < 1 OR NEW.voto > 5 THEN
+SIGNAL SQLSTATE '45000'
+SET MESSAGE_TEXT = 'Errore: voto non valido.';
+END IF;
+
+
+
+9. Trigger_Recensione_Solo_Dopo_Biglietto
+
+IF NOT EXISTS (
+    SELECT 1 FROM biglietto WHERE id_biglietto = NEW.id_biglietto
+) THEN
+SIGNAL SQLSTATE '45000'
+SET MESSAGE_TEXT = 'Errore: impossibile recensire senza partecipazione.';
+END IF;
+
+
+
+10. Trigger_Controllo_Artista_Evento
+
+IF NOT EXISTS (SELECT 1 FROM artista WHERE id_artista = NEW.id_artista)
+OR NOT EXISTS (SELECT 1 FROM evento WHERE id_evento = NEW.id_evento)
+THEN
+SIGNAL SQLSTATE '45000'
+SET MESSAGE_TEXT = 'Errore: artista o evento non valido.';
+END IF;
+
+
+
+11. Trigger_Controllo_Sponsor_Evento
+
+IF NOT EXISTS (SELECT 1 FROM sponsor WHERE id_sponsor = NEW.id_sponsor)
+OR NOT EXISTS (SELECT 1 FROM evento WHERE id_evento = NEW.id_evento)
+THEN
+SIGNAL SQLSTATE '45000'
+SET MESSAGE_TEXT = 'Errore: sponsor o evento non valido.';
+END IF;
+
+
+
+12. Trigger_Prezzo_Biglietto_Automatico
+
+SET NEW.prezzo = (
+    SELECT prezzo
+    FROM evento
+    WHERE id_evento = NEW.id_evento
+);
+
+
+
+13. Trigger_Data_Validazione_Recensione
+
+IF (SELECT data FROM evento WHERE id_evento =
+(SELECT id_evento FROM biglietto WHERE id_biglietto = NEW.id_biglietto))
+> CURDATE()
+THEN
+SIGNAL SQLSTATE '45000'
+SET MESSAGE_TEXT = 'Errore: evento non ancora svolto.';
+END IF;
+
+
+
+14. Trigger_Prevent_Duplicate_Preferiti
+
+IF EXISTS (
+    SELECT 1 FROM preferiti
+    WHERE id_cliente = NEW.id_cliente
+    AND id_evento = NEW.id_evento
+) THEN
+SIGNAL SQLSTATE '45000'
+SET MESSAGE_TEXT = 'Errore: evento già nei preferiti.';
+END IF;
